@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     IconButton,
     Select,
     Table,
     TableBody,
     TableCell,
-    TableHead,
     TableRow,
     TextField,
     InputLabel,
@@ -13,32 +12,67 @@ import {
     Switch,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { bool } from 'prop-types';
 
 const IncidenteTable = () => {
-    const [addIncidente, setAddIncidente] = useState({
+    const [form, setForm] = useState({
         titulo: '',
         descricao: '',
         criticidade: '',
         tipo: '',
-        status: bool,
-    });
-    const [state, setState] = React.useState({
-        checkedA: true,
-        checkedB: true,
+        status: false,
     });
 
-    const handleChange = (event) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
-    };
+    // useEffect(() => {
+    //     console.log('Form: ', form);
+    // }, [form]);
 
-    const [criticidade, setCriticidade] = useState('');
-
-    //create
-    function createIncidente() {
-        return null;
+    function handleSubmit(event) {
+        event.preventDefault();
+        console.log('a');
+        console.log(form);
+        fetch('/api/incidente/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(form),
+            // body: form,
+        })
+            .then((response) => {
+                setForm({
+                    titulo: '',
+                    descricao: '',
+                    criticidade: '',
+                    tipo: '',
+                    status: false,
+                });
+                //Mensagem sucesso
+                return response.json();
+            })
+            .catch((error) => {
+                console.log('error: ', error);
+            });
+        console.log('b');
     }
 
+    function handleChange({ target }) {
+        const { name, value } = target;
+        switch (name) {
+            case 'status':
+                setForm({ ...form, status: !form.status });
+                break;
+
+            default:
+                setForm({ ...form, [name]: value });
+                break;
+        }
+    }
+
+    //create
+    // function handleSubmit(event) {
+    //     event.preventDefault();
+    //     alert('Form Submit');
+    // }
     // //read
     // function readIncidente() {
     //     return null;
@@ -56,20 +90,13 @@ const IncidenteTable = () => {
 
     return (
         <form>
-            <Table
-                // onSubmit={(event) => {
-                //     createIncidente(event, incidente);
-                // }}
-                onSubmit={createIncidente()}
-            >
+            <Table onSubmit={handleSubmit}>
                 <TableBody>
                     <TableRow>
                         <TableCell>
                             <TextField
-                                value={addIncidente.titulo}
-                                onChange={(event) => {
-                                    setAddIncidente(event.target.value);
-                                }}
+                                name="titulo"
+                                onChange={handleChange}
                                 label="Título"
                                 fullWidth={true}
                             />
@@ -78,40 +105,62 @@ const IncidenteTable = () => {
                     <TableRow>
                         <TableCell>
                             <TextField
-                                value={addIncidente.descricao}
-                                onChange={(event) => {
-                                    setAddIncidente(event.target.value);
-                                }}
+                                name="descricao"
+                                onChange={handleChange}
                                 label="Descrição"
                                 fullWidth={true}
+                                rows="3"
                             />
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell>
                             <InputLabel>Criticidade</InputLabel>
-                            <Select value="">
+                            <Select
+                                name="criticidade"
+                                value={form.criticidade}
+                                onChange={handleChange}
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>
+                                    Selecione
+                                </MenuItem>
                                 <MenuItem value={'baixa'}>Baixa</MenuItem>
                                 <MenuItem value={'média'}>Média</MenuItem>
                                 <MenuItem value={'alta'}>Alta</MenuItem>
                             </Select>
                         </TableCell>
                         <TableCell>
+                            <InputLabel>Tipo</InputLabel>
+                            <Select
+                                name="tipo"
+                                value={form.tipo}
+                                onChange={handleChange}
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>
+                                    Selecione
+                                </MenuItem>
+                                <MenuItem value={'alarme'}>Alarme</MenuItem>
+                                <MenuItem value={'incidente'}>
+                                    Incidente
+                                </MenuItem>
+                                <MenuItem value={'outros'}>Outros</MenuItem>
+                            </Select>
+                        </TableCell>
+                        <TableCell>
                             <InputLabel>Status</InputLabel>
                             <Switch
-                                checked={state.checkedB}
+                                name="status"
+                                checked={form.status}
                                 onChange={handleChange}
                                 color="primary"
-                                name="checkedB"
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
                             />
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            <IconButton>
+                            <IconButton onClick={handleSubmit}>
                                 <AddCircleIcon />
                             </IconButton>
                         </TableCell>

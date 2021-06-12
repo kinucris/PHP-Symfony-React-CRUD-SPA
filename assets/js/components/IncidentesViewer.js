@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 import {
     Table,
     TableBody,
@@ -20,18 +21,33 @@ const useStyles = makeStyles({
     },
 });
 
-function createData(titulo, descricao, criticidade, tipo, status) {
-    return { titulo, descricao, criticidade, tipo, status };
-}
+// function createData(titulo, descricao, criticidade, tipo, status) {
+//     return { titulo, descricao, criticidade, tipo, status };
+// }
 
-const rows = [
-    createData('Alarme 01', 'Durante a noite', 'baixa', 'Alarme', true),
-    createData('Alarme 02', 'Durante a noite', 'baixa', 'Alarme', false),
-    createData('Portao', 'Meio dia', 'Alta', 'Outro', false),
-];
+// const rows = [
+//     createData('Alarme 01', 'Durante a noite', 'baixa', 'Alarme', true),
+//     createData('Alarme 02', 'Durante a noite', 'baixa', 'Alarme', false),
+//     createData('Portao', 'Meio dia', 'Alta', 'Outro', false),
+// ];
 
 export default function IncidenteViewer() {
     const classes = useStyles();
+    const [rows, setRows] = useState([]);
+    const getValue = async () => {
+        const { data } = await axios('/api/incidente/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log(data);
+        setRows(data.data);
+    };
+
+    useEffect(() => {
+        getValue();
+    }, []);
 
     return (
         <TableContainer>
