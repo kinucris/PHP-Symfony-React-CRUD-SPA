@@ -1,7 +1,7 @@
 # CRUD SPA
-[![Netlify Status](https://api.netlify.com/api/v1/badges/3027a375-c71d-48fb-a6b6-40a55796c208/deploy-status)](https://app.netlify.com/sites/symfony-react-crud-spa/deploys)
 
-Projeto simples de um pequeno sistema (CRUD) sendo renderizado em React através de uma Single Page Application (SPA) utilizando as técnologias PHP com FrameWork Symfony 5.3 + React.
+
+Projeto simples de um pequeno sistema (CRUD) sendo renderizado em React através de uma Single Page Application (SPA) utilizando as tecnologias PHP com FrameWork Symfony 5.3 + React.
 
 ## ✨Pré-requisitos
 Instalar todas as aplicações a baixo:
@@ -10,28 +10,65 @@ Instalar todas as aplicações a baixo:
 - [Yarn](https://classic.yarnpkg.com/en/docs/install/)
 - [PHP](https://www.php.net/manual/pt_BR/install.windows.php)
 - [MySQL](https://dev.mysql.com/downloads/installer/)
-```php
-<?php code>
-```
-Com todos os pré-requisitos checados você ainda pode rodar um comando para verificar se o seu computador atende a todos os requisitos para trabalhar com o Framework, basta abrir seu terminal e rodar a seguinte linha de comando:
+
+Com todos os pré-requisitos instalados você ainda pode rodar um comando em seu terminal (bash) para verificar se o seu computador atende a todos os requisitos para trabalhar com o Framework, basta abrir seu terminal e rodar a seguinte linha de comando:
 ```php
 symfony check:requirements
 ```
 
 ## 🔥 New Symfony Application
 
-Para iniciar nossa nova aplicação com Symfony, vamos abrir o terminal e rodar o seguinte comando: [referência](https://symfony.com/doc/current/setup.html#creating-symfony-applications) to install foobar.
+1 - Para iniciar nossa nova aplicação clone o repositório ou faça download do projeto para onde desejar em seu computador
+
+Comando:
+```git
+git@github.com:kinucris/symfony-react-crud-spa.git
+```
+
+2 - Acesse a pasta raiz do projeto em seu terminal e então instale as dependências do Symfony com o comando
+```bash
+composer install
+```
+
+3 - Após todas as dependências instaladas, agora duplique e altere o nome do arquivo ".env-sample" para ".env" (Ele se encontra na raiz do projeto) e configure ali para sua conexão MySql
+
+Exemplo:
+```end
+# DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7"
+```
+
+4 - Uma vez com a conexão do banco configurada, agora precisamos executar o seguinte comando para que o symfony crie a Database em nosso banco
+
+```php
+php bin/console doctrine:database:create
+```
+
+5 - Agora precisamos executar a Migration através do comando:
+
+```php
+php bin/console doctrine:migrations:migrate
+```
+O symfony vai exigir a seguinte mensagem "WARNING! You are about to execute a migration in database "incidentesdb" that could result in schema changes and data loss. Are you sure you wish to continue? (yes/no) [yes]"
+Digite Yes para continuar ou simplesmente precione a tecla Enter
+
+6 - Iniciar o servidor do Symfony
 
 ```bash
-symfony new ProjectName --full
+symfony server:start
+```
+7 - Instalar as dependências do Yarn
+```bash
+yarn install
+```
+8 - buildar o projeto para gerar seus Entrypoint
+```bash
+yarn build
 ```
 
 ## Modo de utilização
-```bash
-import foobar
-//reservado
-```
+O sistema está bem simples e intuitivo, segue .gif
 
+[![GIF12-06-2021_15-45-07.gif](https://s6.gifyu.com/images/GIF12-06-2021_15-45-07.gif)](https://gifyu.com/image/oGrp)
 
 
 ## Agradecimento
@@ -52,3 +89,4 @@ Feito com ❤️ por Elvis Moraes 👋🏽 Entre em contato!
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
