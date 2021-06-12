@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems } from './listItems';
-import Typography from '@material-ui/core/Typography';
 import IncidenteTable from './components/IncidenteTable';
 import Copyright from './components/Copyright';
 import IncidentesViewer from './components/IncidentesViewer';
+import { GlobalContext } from '../js/context/GlobalContext';
+import { Alert } from '@material-ui/lab';
+import CloseIcon from '@material-ui/icons/Close';
+import {
+    Collapse,
+    Tooltip,
+    Paper,
+    Grid,
+    Container,
+    Badge,
+    IconButton,
+    Divider,
+    List,
+    Toolbar,
+    AppBar,
+    Box,
+    Drawer,
+    CssBaseline,
+    makeStyles,
+    Typography,
+    CircularProgress,
+} from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -99,7 +107,8 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     fixedHeight: {
-        height: 360,
+        height: 370,
+        overflowY: 'auto',
     },
 }));
 
@@ -109,6 +118,7 @@ export default function Dashboard() {
     const handleDrawer = () => {
         setOpen(!open);
     };
+    const global = useContext(GlobalContext);
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
     return (
@@ -140,12 +150,14 @@ export default function Dashboard() {
                     >
                         Dashboard - Controle de Incidentes
                     </Typography>
-                    <IconButton color="inherit">
-                        {/* Contador Notificações */}
-                        <Badge badgeContent={5} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                    <Tooltip title="Incidentes" aria-label="Incidentes">
+                        <IconButton color="inherit">
+                            {/* Contador Notificações */}
+                            <Badge badgeContent={global.reg} color="secondary">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -174,6 +186,48 @@ export default function Dashboard() {
                         {/* New Incidente */}
                         <Grid item xs={12} md={12} lg={12}>
                             <h2>Cadastrar</h2>
+                            {global.sucesso && (
+                                <Collapse in={global.sucesso}>
+                                    <Alert
+                                        action={
+                                            <IconButton
+                                                aria-label="close"
+                                                color="inherit"
+                                                size="small"
+                                                onClick={() => {
+                                                    global.setSucesso(false);
+                                                }}
+                                            >
+                                                <CloseIcon fontSize="inherit" />
+                                            </IconButton>
+                                        }
+                                    >
+                                        Novo Incidente Registrado.
+                                    </Alert>
+                                </Collapse>
+                            )}
+
+                            {global.isSucessEdited && (
+                                <Collapse in={global.open}>
+                                    <Alert
+                                        severity="info"
+                                        action={
+                                            <IconButton
+                                                aria-label="close"
+                                                color="inherit"
+                                                size="small"
+                                                onClick={() => {
+                                                    global.setOpen(false);
+                                                }}
+                                            >
+                                                <CloseIcon fontSize="inherit" />
+                                            </IconButton>
+                                        }
+                                    >
+                                        Incidente Editado.
+                                    </Alert>
+                                </Collapse>
+                            )}
                             <Paper className={fixedHeightPaper}>
                                 <IncidenteTable />
                             </Paper>
@@ -182,7 +236,20 @@ export default function Dashboard() {
                         <Grid item xs={12}>
                             <h2>Visualizar</h2>
                             <Paper className={classes.paper}>
-                                <IncidentesViewer />
+                                {global.isLoading ? (
+                                    <center>
+                                        <CircularProgress />
+                                    </center>
+                                ) : global.rows.length < 1 ? (
+                                    <div>
+                                        <center>
+                                            Adicione um registro para iniciar o
+                                            uso do sistema.
+                                        </center>
+                                    </div>
+                                ) : (
+                                    <IncidentesViewer />
+                                )}
                             </Paper>
                         </Grid>
                     </Grid>

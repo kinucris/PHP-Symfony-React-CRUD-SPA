@@ -26,7 +26,6 @@ class IndexController extends AbstractController
     public function show($incidenteId)
     {
         $incidente = $this->getDoctrine()->getRepository(Incidentes::class)->find($incidenteId);
-        // $data = json_decode($request->getContent());
 
         return $this->json([
             'data' => $incidente
@@ -39,7 +38,6 @@ class IndexController extends AbstractController
     public function showAll()
     {
         $incidentes = $this->getDoctrine()->getRepository(Incidentes::class)->findAll();
-        // $data = json_decode($request->getContent());
 
         return $this->json([
             'data' => $incidentes
@@ -51,9 +49,6 @@ class IndexController extends AbstractController
      */
     public function create(Request $request)
     {
-        $data = $request->request->all();
-        // $data = json_decode($request->getContent(), true);
-
         $incidente = new Incidentes();
         $incidente->setTitulo($request->get('titulo'));
         $incidente->setDescricao($request->get('descricao'));
@@ -70,7 +65,6 @@ class IndexController extends AbstractController
         return $this->json([
             'data' => 'Incidente cadastrado com sucesso!'
         ]);
-        // return $this->json($data);
     }
 
     /**
@@ -78,30 +72,18 @@ class IndexController extends AbstractController
      */
     public function update($incidenteId, Request $request)
     {
-        $data = $request->request->all();
-
         $entityManager = $this->getDoctrine()->getManager();
         $incidente = $entityManager->getRepository(Incidentes::class)->find($incidenteId);
 
-        if ($request->request->has('titulo'))
-            $incidente->setTitulo($data['titulo']);
-
-        if ($request->request->has('descrisao'))
-            $incidente->setDescricao($data['descrisao']);
-
-        if ($request->request->has('criticidade'))
-            $incidente->setCriticidade($data['criticidade']);
-
-        if ($request->request->has('tipo'))
-            $incidente->setTipo($data['tipo']);
-
-        if ($request->request->has('status'))
-            $incidente->setStatus($data['status']);
-
+        $incidente->setTitulo($request->get('titulo'));
+        $incidente->setDescricao($request->get('descricao'));
+        $incidente->setCriticidade($request->get('criticidade'));
+        $incidente->setTipo($request->get('tipo'));
+        $incidente->setStatus($request->get('status'));
         $entityManager->flush();
 
         return $this->json([
-            'data' => 'Curso atualizado com sucesso!'
+            'data' => $incidente
         ]);
     }
 
@@ -118,7 +100,7 @@ class IndexController extends AbstractController
         $manager->flush();
 
         return $this->json([
-            'data' => 'Curso removido com sucesso!'
+            'data' => 'Incidente removido com sucesso!'
         ]);
     }
 }

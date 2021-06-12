@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
 import {
     Table,
     TableBody,
@@ -9,11 +8,14 @@ import {
     TableHead,
     TableRow,
     IconButton,
-    Switch,
     Tooltip,
 } from '@material-ui/core';
+import { GlobalContext } from '../context/GlobalContext';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ClearIcon from '@material-ui/icons/Clear';
+import CheckBoxOutlineBlankRoundedIcon from '@material-ui/icons/CheckBoxOutlineBlankRounded';
+import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 
 const useStyles = makeStyles({
     table: {
@@ -21,33 +23,9 @@ const useStyles = makeStyles({
     },
 });
 
-// function createData(titulo, descricao, criticidade, tipo, status) {
-//     return { titulo, descricao, criticidade, tipo, status };
-// }
-
-// const rows = [
-//     createData('Alarme 01', 'Durante a noite', 'baixa', 'Alarme', true),
-//     createData('Alarme 02', 'Durante a noite', 'baixa', 'Alarme', false),
-//     createData('Portao', 'Meio dia', 'Alta', 'Outro', false),
-// ];
-
 export default function IncidenteViewer() {
     const classes = useStyles();
-    const [rows, setRows] = useState([]);
-    const getValue = async () => {
-        const { data } = await axios('/api/incidente/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        console.log(data);
-        setRows(data.data);
-    };
-
-    useEffect(() => {
-        getValue();
-    }, []);
+    const global = useContext(GlobalContext);
 
     return (
         <TableContainer>
@@ -67,8 +45,8 @@ export default function IncidenteViewer() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.titulo}>
+                    {global.rows.map((row, index) => (
+                        <TableRow key={index}>
                             <TableCell component="th" scope="row">
                                 {row.titulo}
                             </TableCell>
@@ -78,17 +56,50 @@ export default function IncidenteViewer() {
                             </TableCell>
                             <TableCell align="right">{row.tipo}</TableCell>
                             <TableCell align="right">
-                                <Switch checked={row.status} color="primary" />
+                                {row.status ? (
+                                    <CheckBoxRoundedIcon />
+                                ) : (
+                                    <CheckBoxOutlineBlankRoundedIcon />
+                                )}
                             </TableCell>
                             <TableCell align="right">
                                 <IconButton>
-                                    <Tooltip title="Editar" aria-label="Edit">
-                                        <EditIcon />
-                                    </Tooltip>
+                                    {global.form.id === row.id ? (
+                                        <Tooltip
+                                            title="Cancelar"
+                                            aria-label="Cancelar"
+                                        >
+                                            <ClearIcon
+                                                onClick={() => {
+                                                    global.updateIncidente(row);
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip
+                                            title="Editar"
+                                            aria-label="Edit"
+                                        >
+                                            <EditIcon
+                                                onClick={() => {
+                                                    global.updateIncidente(row);
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    )}
                                 </IconButton>
                                 <IconButton>
                                     <Tooltip title="Delete" aria-label="Delet">
-                                        <DeleteIcon />
+                                        <DeleteIcon
+                                            onClick={() => {
+                                                window.confirm(
+                                                    'Confirmar exclusão?',
+                                                ) &&
+                                                    global.deleteIncidente(
+                                                        row.id,
+                                                    );
+                                            }}
+                                        />
                                     </Tooltip>
                                 </IconButton>
                             </TableCell>
